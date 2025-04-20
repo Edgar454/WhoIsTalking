@@ -1,0 +1,6 @@
+model_name: speaker-diary
+python_version: py310
+requirements: 
+  - pyannote.audio
+resources:
+  accelerator: "A10G"
