@@ -1,5 +1,7 @@
 from fastapi import FastAPI
-from whoisspeaking.routes import tasks 
+from fastapi.middleware.cors import CORSMiddleware
+from whoisspeaking.routes import tasks ,results
+
 app = FastAPI()
 
 @app.get("/")
@@ -10,3 +12,13 @@ async def root():
     return {"message": "Welcome !"}
 
 app.include_router(tasks.router)
+app.include_router(results.router)
+
+# Add  middleware configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Or ["*"] to allow all origins (not safe for prod)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)

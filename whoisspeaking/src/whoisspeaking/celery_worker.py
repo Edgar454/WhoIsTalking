@@ -1,8 +1,9 @@
 import asyncio
 import os
+import json
 from celery import Celery
 from celery.signals import task_failure , task_success
-from whoisspeaking.utils import diaratize_and_transcript_audio  
+from whoisspeaking.utils import _process_audio
 import logging
 import requests
 
@@ -23,19 +24,17 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-@celery_app.task(autoretry_for = (Exception,)  , max_retries = 5)
-def process_audio(filehash , audio_content , audio_filename):
+
+
+@celery_app.task(autoretry_for=(Exception,), max_retries=5)
+def process_audio(filehash, audio_content, audio_filename):
     """
     Background task for processing the audio asynchronously using asyncio.
+    This task must be synchronous for Celery compatibility.
     """
-    
     try:
-        logging.info("Processing started")
-        diarization , transcription , speaker_transcript = asyncio.run(diaratize_and_transcript_audio(audio_content , audio_filename))
-        logging.info("Processing completed")
-
-        return {"filehash":filehash ,"speaker_transcript":speaker_transcript ,  "diarization":diarization}
-    
+        result = asyncio.run(_process_audio(filehash, audio_content, audio_filename))
+        return result
     except Exception as e:
         print(f"An error occurred: {e}")
         return {"error": str(e)}

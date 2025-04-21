@@ -22,21 +22,11 @@ router = APIRouter()
 async def process_material(audio: UploadFile = File(...)):
     
     try:
-        audio_content = await audio.read()  # Don't forget to await for async
-
-        # get the cache
-        redis = await get_redis_connection()
+        audio_content = await audio.read()  
         filehash = get_file_hash(audio_content)
-        result = await redis.get(f"task_result:{filehash}")
 
-        if result :
-            logger.info("Cached result found, returning.")
-            return json.loads(result) 
-        else:
-            logger.info("No cached result, creating new Celery task.")
-            # Call the Celery task
-            task = process_audio.delay(filehash , audio_content , audio.filename)
-            return {"message": "Processing started", "task_id": task.id , "file_id":filehash}
+        task = process_audio.delay(filehash , audio_content , audio.filename)
+        return {"message": "Processing started", "task_id": task.id , "file_id":filehash}
         
     except Exception as e:
         logging.error(f"Error in processing: {e}")
@@ -77,6 +67,8 @@ async def update_task_result(task_id: str,
 
         redis = await get_redis_connection()
         await redis.set(f"task_result:{result.get('filehash')}" , json.dumps({"transcription":transcription , "diarization":diarization}) )
+        await redis.publish(f"task_result:{result.get('filehash')}" , json.dumps({"transcription":transcription , "diarization":diarization}) )
+
         
         return {"message": "Task result updated successfully!"}
     
@@ -85,7 +77,7 @@ async def update_task_result(task_id: str,
         raise HTTPException(status_code=500, detail=f"Task failed: {error}")
 
 
-@router.get("/get-task-result/{task_id}")
+@router.get("/get-task-result/")
 async def get_task_result(filehash: str):
     redis = await get_redis_connection()
 

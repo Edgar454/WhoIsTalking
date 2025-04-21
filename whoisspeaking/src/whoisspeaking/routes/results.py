@@ -1,15 +1,17 @@
-from fastapi import APIRouter, HTTPException
-import aioredis
-import json
+from fastapi import APIRouter, WebSocket
+from whoisspeaking.websocket.socket import listen_to_redis_channel
+
 
 router = APIRouter()
 
-# Configurer Redis
-REDIS_HOST = "localhost"
-REDIS_PORT = 6379
-REDIS_DB = 0
+@router.websocket("/ws/task/{task_id}")
+async def websocket_endpoint(websocket: WebSocket, task_id: str):
+    # Accept WebSocket connection
+    await websocket.accept()
 
-async def get_redis_connection():
-    return await aioredis.create_redis_pool((REDIS_HOST, REDIS_PORT), db=REDIS_DB)
-
-
+    try:
+        # Start listening for task updates from Redis
+        await listen_to_redis_channel(websocket, task_id)
+    except Exception as e:
+        print(f"Error in WebSocket: {e}")
+        await websocket.close()

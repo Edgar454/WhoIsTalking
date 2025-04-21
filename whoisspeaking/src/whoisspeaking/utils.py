@@ -16,6 +16,7 @@ Make sure the `GROQ_API_KEY` and `BASETEN_API_KEY` environment variables are set
 
 import os
 import io
+import json
 import aiohttp
 import asyncio
 import base64
@@ -155,3 +156,25 @@ async def diaratize_and_transcript_audio(audio_content, audio_filename):
                     break
 
     return diarization , transcription , speaker_transcript
+
+
+# Async internal logic
+async def _process_audio(filehash, audio_content, audio_filename):
+    redis = await get_redis_connection()
+    result = await redis.get(f"task_result:{filehash}")
+    if result:
+        logger.info("Cached result found, returning.")
+        result_json = json.loads(result)
+        diarization = result_json["diarization"]
+        speaker_transcript = result_json["transcription"]
+    else:
+        logger.info("No cached result, creating new Celery task.")
+        logger.info("Processing started")
+        diarization, transcription, speaker_transcript = await diaratize_and_transcript_audio(audio_content, audio_filename)
+        logger.info("Processing completed")
+
+    return {
+        "filehash": filehash,
+        "speaker_transcript": speaker_transcript,
+        "diarization": diarization
+    }
