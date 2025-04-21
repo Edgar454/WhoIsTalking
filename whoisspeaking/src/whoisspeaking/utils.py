@@ -28,6 +28,7 @@ import logging
 import hashlib
 
 
+
 load_dotenv()
 
 # logging config
@@ -128,6 +129,32 @@ async def request_transcription(audio_content , audio_filename):
     except Exception as e:
         logger.error(f"Failed to get transcription: {e}")
         return {}
+    
+def match_transcription_and_diarization(transcription, diarization):
+    # Initialize a dictionary to hold the speaker's transcript
+    speaker_transcript = {speaker: [] for speaker in diarization}
+    print(speaker_transcript)
+
+    # Iterate over each diarization segment first
+    for speaker, segments in diarization.items():
+        for seg_start, seg_end in segments:
+            collected_texts = []
+
+            # For each transcription chunk, check if it overlaps with this diarization segment
+            for chunk in transcription.segments:
+                chunk_start = chunk["start"]
+                chunk_end = chunk["end"]
+                text = chunk["text"]
+
+                # Overlap condition
+                if not (chunk_end < seg_start or chunk_start > seg_end):
+                    collected_texts.append(text)
+
+            # Join the collected texts for that speaker segment
+            if collected_texts:
+                speaker_transcript[speaker].append("\n".join(collected_texts))
+
+    return speaker_transcript
 
     
 
@@ -142,18 +169,7 @@ async def diaratize_and_transcript_audio(audio_content, audio_filename):
         tuple: (diarization, transcription) results.
     """
     diarization, transcription = await asyncio.gather(request_diary(audio_content), request_transcription(audio_content ,audio_filename))
-    speaker_transcript = defaultdict(list)
-
-    for chunk in transcription.segments:
-        chunk_start = chunk["start"]
-        chunk_end = chunk["end"]
-        text = chunk["text"]
-
-        for speaker, segments in diarization.items():
-            for seg_start, seg_end in segments:
-                if not (chunk_end < seg_start or chunk_start > seg_end):
-                    speaker_transcript[speaker].append(text)
-                    break
+    speaker_transcript = match_transcription_and_diarization(transcription , diarization)
 
     return diarization , transcription , speaker_transcript
 
@@ -178,3 +194,4 @@ async def _process_audio(filehash, audio_content, audio_filename):
         "speaker_transcript": speaker_transcript,
         "diarization": diarization
     }
+
