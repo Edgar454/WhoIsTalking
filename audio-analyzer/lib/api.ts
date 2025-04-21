@@ -91,3 +91,20 @@ export function listenToTaskWebSocket(taskId: string, onMessage: (data: any) => 
 
   return socket
 }
+
+export const waitForResult = async (fileId: string, maxRetries = 10, delayMs = 2000) => {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const result = await getTaskResult(fileId)
+      return result
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        // Wait and retry
+        await new Promise(res => setTimeout(res, delayMs))
+      } else {
+        throw error // Rethrow other errors
+      }
+    }
+  }
+  throw new Error("Result not available after multiple retries")
+}

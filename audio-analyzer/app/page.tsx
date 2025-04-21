@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useRef , useCallback } from "react"
-import { uploadAudio, getTaskStatus, getTaskResult } from "@/lib/api"
+import { uploadAudio, getTaskStatus, getTaskResult , waitForResult } from "@/lib/api"
 import WaveformPlayer from "@/components/waveform-player"
 import ConversationDisplay from "@/components/conversation-display"
 import LoadingIndicator from "@/components/loading-indicator"
@@ -34,18 +34,9 @@ export default function Home() {
       setFileId(response.file_id)
 
       // Start polling for task status
-      pollingIntervalRef.current = setInterval(async () => {
-        if (!response.task_id) return
-
-        const statusResponse = await getTaskStatus(response.task_id)
-        if (statusResponse.status === "Success") {
-          clearInterval(pollingIntervalRef.current!)
-          console.log(response.file_id)
-          const result = await getTaskResult(response.file_id)
-          setAnalysisResult(result)
-          setIsProcessing(false)
-        }
-      }, 2000)
+      const result = await waitForResult(response.file_id)
+      setAnalysisResult(result)
+      setIsProcessing(false)
     } catch (error) {
       console.error("Error uploading file:", error)
       setIsProcessing(false)

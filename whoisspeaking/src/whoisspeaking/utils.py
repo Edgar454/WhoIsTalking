@@ -133,7 +133,6 @@ async def request_transcription(audio_content , audio_filename):
 def match_transcription_and_diarization(transcription, diarization):
     # Initialize a dictionary to hold the speaker's transcript
     speaker_transcript = {speaker: [] for speaker in diarization}
-    print(speaker_transcript)
 
     # Iterate over each diarization segment first
     for speaker, segments in diarization.items():
