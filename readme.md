@@ -103,7 +103,10 @@ Now you can access the app at [http://localhost:3000](http://localhost:3000).
 ## Demo
 
 You can find a demo of the application here: 
-[📹 Demo Video](./demo/demo.mp4)
+<video width="600" controls>
+  <source src="./demo/demo.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 ---
 
