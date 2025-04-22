@@ -1,16 +1,21 @@
 import asyncio
 import os
-import json
 from celery import Celery
 from celery.signals import task_failure , task_success
 from whoisspeaking.utils import _process_audio
 import logging
+from dotenv import load_dotenv
 import requests
+
+load_dotenv()
+
+CELERY_BROKER= os.getenv("CELERY_BROKER")
+CELERY_RESULT_BACKEND= os.getenv("CELERY_RESULT_BACKEND")
 
 celery_app = Celery(
     "tasks",
-    broker= "redis://localhost:6379/0",
-    backend= "redis://localhost:6379/0",
+    broker= CELERY_BROKER,
+    backend= CELERY_RESULT_BACKEND,
 )
 
 

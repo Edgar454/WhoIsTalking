@@ -1,0 +1,11 @@
+uvicorn
+fastapi
+python-multipart
+celery
+asyncio
+aiohttp
+groq
+redis
+hashlib
+python-dotenv
+poetry

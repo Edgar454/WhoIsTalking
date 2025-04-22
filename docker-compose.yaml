@@ -1,0 +1,55 @@
+services:
+  fastapi:
+    build:
+      context: ./whoisspeaking
+      dockerfile: Dockerfile
+    container_name: whoisspeaking
+    networks:
+      - internal_network
+    ports:
+      - "8000:8000" 
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - BASETEN_API_KEY=${BASETEN_API_KEY}
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - REDIS_HOST=redis
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]  
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  audio-analyzer:
+    build:
+      context: ./audio-analyzer 
+      dockerfile: Dockerfile
+    container_name: audio-analyzer
+    ports:
+      - "3000:3000"  
+    networks:
+      - internal_network
+    depends_on:
+      fastapi:
+        condition: service_healthy
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"  
+    networks:
+      - internal_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  internal_network:
+    driver: bridge

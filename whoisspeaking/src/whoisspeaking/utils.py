@@ -21,7 +21,6 @@ import aiohttp
 import asyncio
 import base64
 from redis.asyncio import Redis
-from collections import defaultdict
 from groq import Groq
 from dotenv import load_dotenv
 import logging
@@ -43,7 +42,7 @@ GROQ_API_KEY = os.getenv('GROQ_API_KEY')
 BASETEN_API_KEY = os.getenv('BASETEN_API_KEY')
 
 #Redis Cache Config
-REDIS_HOST = "localhost"
+REDIS_HOST = os.getenv('REDIS_HOST', 'redis')
 REDIS_PORT = 6379
 REDIS_DB = 0
 

@@ -10,14 +10,6 @@ export async function uploadAudio(file: File) {
   formData.append("audio", file)
 
   console.log("🟡 Starting uploadAudio call")
-  console.log("📦 File details:", {
-    name: file.name,
-    type: file.type,
-    size: file.size,
-  })
-
-  console.log("🌍 API Endpoint:", `${BASE_URL}/process-audio/`)
-
   try {
     const response = await axios.post(`${BASE_URL}/process-audio/`, formData, {
       headers: {
