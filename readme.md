@@ -102,7 +102,7 @@ Now you can access the app at [http://localhost:3000](http://localhost:3000).
 
 ## Demo
 
-You can find a demo of the application here: 
+You can find a demo of the  app in the demo folder :
 <video width="600" controls>
   <source src="./demo/demo.mp4" type="video/mp4">
   Your browser does not support the video tag.
@@ -116,6 +116,4 @@ You can find a demo of the application here:
 - **Celery**: Make sure to start the Celery worker first, as it handles background tasks like audio processing.
 - **FastAPI**: This handles the main backend logic for the app.
 
----
 
-Feel free to reach out if you have any questions or issues! Happy coding! 😊
