@@ -109,6 +109,8 @@ You can find a demo of the  app in the demo folder :
 </iframe>
 </figure>
 
+![](./demo/demo.mp4)
+
 ---
 
 ### Notes:
