@@ -104,7 +104,7 @@ Now you can access the app at [http://localhost:3000](http://localhost:3000).
 
 You can find a demo of the  app in the demo folder :
 
-![](./demo/demo.mp4)
+![video](./demo/demo.mp4)
 
 ---
 
