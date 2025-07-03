@@ -104,11 +104,6 @@ Now you can access the app at [http://localhost:3000](http://localhost:3000).
 
 You can find a demo of the  app in the demo folder :
 
-<figure class="video_container">
-  <iframe src="./demo/demo.mp4" frameborder="0" allowfullscreen="true"> 
-</iframe>
-</figure>
-
 ![](./demo/demo.mp4)
 
 ---
