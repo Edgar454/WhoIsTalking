@@ -1,5 +1,5 @@
 from fastapi import APIRouter, WebSocket
-from whoisspeaking.websocket.socket import listen_to_redis_channel
+from websocket.socket import listen_to_redis_channel
 
 
 router = APIRouter()

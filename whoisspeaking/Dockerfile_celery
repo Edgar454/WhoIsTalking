@@ -1,8 +1,11 @@
 
+
 FROM ghcr.io/astral-sh/uv:python3.10-trixie-slim
 
+USER root 
+
 # Set working directory
-WORKDIR /whoisspeaking
+WORKDIR /worker
 
 
 # Install build dependencies
@@ -19,10 +22,15 @@ COPY pyproject.toml poetry.lock* ./
 RUN uv pip install --system -r pyproject.toml
 
 # Copy application source code
-COPY . .
 
-# Expose FastAPI port
-EXPOSE 8000
+COPY celery_worker.py  .
+COPY utils.py  .
+
+ENV PYTHONPATH=/worker
+
+RUN  groupadd -r celery && useradd -r -g celery celery && chown -R celery:celery /worker
+
+USER celery
 
 # Run Supervisor to manage FastAPI & Celery
-CMD [ "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000" ]
+CMD [ "celery", "-A", "celery_worker", "worker", "--loglevel=info" ]

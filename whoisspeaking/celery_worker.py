@@ -2,7 +2,7 @@ import asyncio
 import os
 from celery import Celery
 from celery.signals import task_failure , task_success
-from whoisspeaking.utils import _process_audio
+from utils import _process_audio
 import logging
 from dotenv import load_dotenv
 import requests
@@ -20,7 +20,7 @@ celery_app = Celery(
 
 
 # FastAPI Backend URL from environment variable
-FASTAPI_BACKEND_URL = os.getenv("FASTAPI_BACKEND_URL", "http://localhost:8000/update-task-result")
+FASTAPI_BACKEND_URL = os.getenv("FASTAPI_BACKEND_URL", "http://localhost:8000/")
 
 # logging config
 logging.basicConfig(
@@ -69,7 +69,7 @@ def on_task_success(sender=None, result=None, **kwargs):
     Send the task result to the FastAPI backend upon successful completion.
     """
     task_id = sender.request.id
-    url = f"{FASTAPI_BACKEND_URL}/{task_id}"
+    url = f"{FASTAPI_BACKEND_URL}/update-task-result/{task_id}"
     payload = {"result": result}
     notify_backend(url, payload)
 
@@ -80,7 +80,7 @@ def on_task_failure(sender=None, exception=None, **kwargs):
     Notify the FastAPI backend of task failure.
     """
     task_id = sender.request.id
-    url = f"{FASTAPI_BACKEND_URL}/{task_id}"
+    url = f"{FASTAPI_BACKEND_URL}/update-task-result/{task_id}"
     payload = {"result": str(exception)}
     notify_backend(url, payload)
 

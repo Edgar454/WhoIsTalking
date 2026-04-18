@@ -6,8 +6,8 @@ import json
 
 
 from celery.result import AsyncResult
-from whoisspeaking.celery_worker import process_audio , celery_app
-from whoisspeaking.utils import get_file_hash , get_redis_connection
+from celery_worker import process_audio , celery_app
+from utils import get_file_hash , get_redis_connection
 
 
 logging.basicConfig(

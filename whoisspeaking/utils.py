@@ -81,13 +81,12 @@ async def request_diary(audio):
         # Send the request
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                "https://model-5wod91nq.api.baseten.co/development/predict",
+                "https://model-wpjryoew.api.baseten.co/development/predict",
                 headers={"Authorization": f"Api-Key {BASETEN_API_KEY}"},
                 json=payload,
             ) as response:
                 resp_json = await response.json()
                 logger.info("Diarization request successful")
-
         return resp_json
     
     except Exception as e:
@@ -131,7 +130,9 @@ async def request_transcription(audio_content , audio_filename):
     
 def match_transcription_and_diarization(transcription, diarization):
     # Initialize a dictionary to hold the speaker's transcript
+    logger.info(diarization)
     speaker_transcript = {speaker: [] for speaker in diarization}
+    
 
     # Iterate over each diarization segment first
     for speaker, segments in diarization.items():
@@ -167,6 +168,7 @@ async def diaratize_and_transcript_audio(audio_content, audio_filename):
         tuple: (diarization, transcription) results.
     """
     diarization, transcription = await asyncio.gather(request_diary(audio_content), request_transcription(audio_content ,audio_filename))
+    logger.info("Matching transcription with diarization results")
     speaker_transcript = match_transcription_and_diarization(transcription , diarization)
 
     return diarization , transcription , speaker_transcript

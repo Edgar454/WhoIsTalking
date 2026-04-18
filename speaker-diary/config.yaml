@@ -1,6 +1,10 @@
 model_name: speaker-diary
-python_version: py310
+python_version: py312
 requirements: 
-  - pyannote.audio
+  - pyannote.audio>=4.0.1
+  - numpy>=2.3
+  - soundfile>=0.12.1
 resources:
   accelerator: "A10G"
+secrets:
+  hf_access_token: null

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from whoisspeaking.routes import tasks ,results
+from routes import tasks ,results
 
 app = FastAPI()
 
@@ -17,7 +17,7 @@ app.include_router(results.router)
 # Add  middleware configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  
+    allow_origins=["http://audio-analyzer:3000","http://redis:6379"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

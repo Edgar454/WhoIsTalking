@@ -1,4 +1,22 @@
 services:
+  celery-worker:
+    build:
+      context: ./whoisspeaking
+      dockerfile: Dockerfile_celery
+    container_name: celery-worker
+    networks:
+      - internal_network
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - BASETEN_API_KEY=${BASETEN_API_KEY}
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - FASTAPI_BACKEND_URL= ${FASTAPI_BACKEND_URL}
+      - REDIS_HOST=redis
+      
   fastapi:
     build:
       context: ./whoisspeaking
@@ -30,7 +48,7 @@ services:
       dockerfile: Dockerfile
     container_name: audio-analyzer
     ports:
-      - "3000:3000"  
+      - "3000:80"  
     networks:
       - internal_network
     depends_on:

@@ -1,4 +1,4 @@
-from whoisspeaking.utils import get_redis_connection
+from utils import get_redis_connection
 import asyncio
 import json
 from fastapi import WebSocket, WebSocketDisconnect

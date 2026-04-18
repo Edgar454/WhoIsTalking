@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const BASE_URL = "http://localhost:8000" // adjust if deployed elsewhere
+const BASE_URL = "/api" // adjust if deployed elsewhere
 
 // 1. Upload audio file
 
